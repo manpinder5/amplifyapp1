@@ -17,12 +17,6 @@ function App() {
 
   async function fetchNotes() {
     const apiData = await API.graphql({ query: listNotes });
-    setNotes(apiData.data.listNotes.items);
-  }
-
-
-  async function onChange(e) {
-    const apiData = await API.graphql({ query: listNotes });
     const notesFromAPI = apiData.data.listNotes.items;
     await Promise.all(notesFromAPI.map(async note => {
       if (note.image) {
@@ -32,6 +26,15 @@ function App() {
       return note;
     }))
     setNotes(apiData.data.listNotes.items);
+  }
+
+
+  async function onChange(e) {
+    if (!e.target.files[0]) return
+    const file = e.target.files[0];
+    setFormData({ ...formData, image: file.name });
+    await Storage.put(file.name, file);
+    fetchNotes();
   }
 
 
